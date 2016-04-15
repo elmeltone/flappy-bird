@@ -10,6 +10,7 @@ var concat = require('gulp-concat');
 var rename = require('gulp-rename');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
+var sourcemaps = require('gulp-sourcemaps');
 
 // JavaScript linting task
 gulp.task('jshint', function() {
@@ -32,7 +33,7 @@ gulp.task('watch', function() {
 });
 
 // Default task
-gulp.task('default', ['jshint', 'sass', 'watch']);
+gulp.task('default', ['jshint', 'sass', 'watch', 'scripts']);
 
 // Minify index
 gulp.task('html', function() {
@@ -43,11 +44,12 @@ gulp.task('html', function() {
 
 // Javascript build task, removes whitespace and concatenates all files
 gulp.task('scripts', function() {
-	return browserify('js/main.js')
+	return browserify('./js/main.js', { debug: true })
 	.bundle()
-	.pipe(source('app.js'))
+	.pipe(source('./js/main.js'))
 	.pipe(buffer())
-	.pipe(uglify())
+	.pipe(sourcemaps.init({ loadMaps: true }))
+	.pipe(sourcemaps.write('build/js'))
 	.pipe(gulp.dest('build/js'));
 });
 
